@@ -2,26 +2,328 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-[#07080f] text-[#f0eeff] antialiased selection:bg-[#6c63ff]/30 selection:text-white overflow-x-hidden;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   }
-}
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  * {
+    cursor: none !important;
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    * {
+      cursor: auto !important;
+    }
+  }
+
+  /* Reduce motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* GPU Promotion for 60fps Scroll */
+  .gpu-accelerate {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  /* Apple-like ultra premium glass */
+  .glass {
+    @apply bg-black/10 backdrop-blur-2xl border border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)];
+  }
+  
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.00) 100%);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  }
+
+  /* Text gradients */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40;
+  }
+  
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-hover;
+  }
+
+  /* Scrollbar hide utility */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animated underline fill for links */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-[1px] bg-white/70 transition-all duration-500;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* 3D press micro-interaction for buttons */
+  .btn-press {
+    @apply active:scale-[0.96] transition-transform duration-300;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+/* =========================================
+   SECTION HEADING REVEAL
+   ========================================= */
+
+.reveal-chars .char {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+}
+
+.reveal-chars.is-visible .char {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Line-by-line reveal */
+.reveal-line {
+  overflow: hidden;
+  display: block;
+}
+.reveal-line > .inner {
+  display: block;
+  transform: translateY(110%) rotate(2deg);
+  transform-origin: left bottom;
+  opacity: 0;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease;
+}
+.reveal-line.is-visible > .inner {
+  transform: translateY(0) rotate(0deg);
+  opacity: 1;
+}
+
+/* Section fade-up on scroll */
+.fade-up {
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fade-up.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Staggered children */
+.stagger-children > * {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.stagger-children.is-visible > *:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.05s; }
+.stagger-children.is-visible > *:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.1s; }
+.stagger-children.is-visible > *:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.15s; }
+.stagger-children.is-visible > *:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.2s; }
+.stagger-children.is-visible > *:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.25s; }
+.stagger-children.is-visible > *:nth-child(n+6) { opacity: 1; transform: none; transition-delay: 0.3s; }
+
+/* =========================================
+   CUSTOM SCROLLBAR
+   ========================================= */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #07080f;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(133, 133, 168, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(108, 99, 255, 0.5);
+}
+
+/* =========================================
+   LENIS SMOOTH SCROLL
+   ========================================= */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* =========================================
+   SECTION DIVIDER GLOW LINE
+   ========================================= */
+.section-transition-sweep {
+  width: 0%;
+  height: 1px;
+  background: #6c63ff;
+  opacity: 0.7;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.section-transition-sweep.is-visible {
+  width: 100%;
+}
+
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(108, 99, 255, 0.15), transparent);
+}
+
+/* =========================================
+   NOISE TEXTURE OVERLAY
+   ========================================= */
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  z-index: 50;
+}
+
+/* =========================================
+   CONIC BORDER CARD (NEXIDO)
+   ========================================= */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes rotate-border {
+  to { --angle: 360deg; }
+}
+
+.conic-border-card {
+  position: relative;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
+  z-index: 1;
+  overflow: hidden;
+}
+.conic-border-card::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: conic-gradient(from var(--angle), transparent 70%, rgba(108,99,255,0.8) 100%, #4a3f8f);
+  z-index: -1;
+  animation: rotate-border 4s linear infinite;
+}
+.conic-border-card::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: #0d0d1a;
+  border-radius: calc(1.5rem - 1px);
+  z-index: -1;
+}
+
+/* =========================================
+   DUAL MARQUEE HOVER (NEXIDO)
+   ========================================= */
+.marquee-container:hover .animate-marquee,
+.marquee-container:hover .animate-marquee-reverse {
+  animation-duration: 43.75s !important;
+  transition: animation-duration 0.8s ease;
+}
+.animate-marquee-top { animation: marquee 35s linear infinite; }
+.animate-marquee-bottom { animation: marquee-reverse 50s linear infinite; }
+
+.marquee-container:hover .animate-marquee-top { animation-duration: 43.75s; }
+.marquee-container:hover .animate-marquee-bottom { animation-duration: 62.5s; }
+
+/* =========================================
+   MAGNETIC BUTTON ENGINEERED GLASS
+   ========================================= */
+.spring-back {
+  transition: transform 0.6s cubic-bezier(0.23, 1.2, 0.32, 1);
+}
+
+.engineered-glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 0 0 1px rgba(108, 99, 255, 0.1),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+.engineered-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(108,99,255,0.15), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.engineered-glass:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.engineered-glass:hover::before {
+  opacity: 1;
+}
+
+.engineered-glass:active {
+  transform: scale(0.97) translateY(1px) !important;
+  transition: transform 0.08s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* =========================================
+   AUTOFILL FIX (PREVENT WHITE BOX)
+   ========================================= */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:active {
+  transition: background-color 50000s ease-in-out 0s;
+  -webkit-text-fill-color: white !important;
+  caret-color: white;
 }
