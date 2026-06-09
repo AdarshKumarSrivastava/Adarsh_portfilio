@@ -277,21 +277,23 @@ export default function Projects() {
         {/* Sticky wrapper */}
         <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col bg-transparent pt-24 md:pt-32">
           
-          {/* Section label (Now relative and part of the normal flow to prevent overlap) */}
-          <div className="px-8 md:px-16 z-40 pointer-events-none shrink-0 mb-8 md:mb-12">
-            <p className="text-accent font-mono text-[10px] tracking-[0.4em] uppercase mb-4">03 — Work</p>
-            <h2 className="text-4xl md:text-6xl font-heading font-medium text-white tracking-tight">
-              Selected <span className="text-white/40 italic">Works</span>.
-            </h2>
-            <p className="text-secondary font-sans text-sm mt-4 hidden md:block">
-              Click any card to explore the full case study.
-            </p>
-          </div>
+          {/* Section label and scroll indicator combined to prevent overlap */}
+          <div className="px-8 md:px-16 z-40 pointer-events-none shrink-0 mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <p className="text-accent font-mono text-[10px] tracking-[0.4em] uppercase mb-4">03 — Work</p>
+              <h2 className="text-4xl md:text-6xl font-heading font-medium text-white tracking-tight">
+                Selected <span className="text-white/40 italic">Works</span>.
+              </h2>
+              <p className="text-secondary font-sans text-sm mt-4 hidden md:block">
+                Click any card to explore the full case study.
+              </p>
+            </div>
 
-          {/* Scroll progress indicator */}
-          <div className="absolute bottom-8 right-8 md:right-16 z-40 flex items-center gap-4 pointer-events-none">
-            <div className="w-12 h-[1px] bg-white/20" />
-            <span className="text-secondary font-mono text-[10px] uppercase tracking-widest">Scroll to explore</span>
+            {/* Scroll progress indicator */}
+            <div className="flex items-center gap-4 pb-2">
+              <div className="w-12 h-[1px] bg-white/20" />
+              <span className="text-secondary font-mono text-[10px] uppercase tracking-widest">Scroll to explore</span>
+            </div>
           </div>
 
           {/* Horizontal scroll track (Fill remaining space) */}

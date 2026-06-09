@@ -22,7 +22,7 @@ const skillGroups = [
   },
   {
     label: "Databases & Tools",
-    items: ["MongoDB", "MySQL", "Git", "VS Code", "Matplotlib", "Seaborn"],
+    items: ["MongoDB", "MySQL", "Git", "VS Code", "Matplotlib", "Seaborn", "Librosa"],
     color: "text-white/60",
   },
 ];

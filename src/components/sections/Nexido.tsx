@@ -163,17 +163,17 @@ export default function Nexido() {
           invalidateOnRefresh: true,
         });
 
-        // Blur and dim the text slightly so it stays visible like a watermark
+        // Blur and dim the text progressively so it stays visible like a watermark and fades slowly
         gsap.to(headerRef.current, {
-          filter: "blur(3px)",
-          opacity: 0.5,
-          scale: 0.98,
+          filter: "blur(8px)",
+          opacity: 0.15,
+          scale: 0.95,
           ease: "none",
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
-            end: "bottom center",
-            scrub: true,
+            end: "bottom top",
+            scrub: 1, // Add scrub smoothing to prevent instant jerks when scrolling fast
           }
         });
       }
@@ -240,8 +240,8 @@ export default function Nexido() {
 
       {/* Pinned Header */}
       <div ref={headerRef} className="w-full h-[40vh] flex flex-col items-center justify-center text-center px-6 z-30 pointer-events-none will-change-transform">
-        <span className="text-accent font-mono text-m tracking-[0.3em] uppercase mb-4">Nexido</span>
-        <h2 className="font-heading text-7xl md:text-9xl font-medium tracking-tight text-white leading-[1.1]">
+        <span className="text-accent font-mono text-sm tracking-[0.3em] uppercase mb-4">Nexido</span>
+        <h2 className="font-heading text-5xl md:text-9xl font-medium tracking-tight text-white leading-[1.1]">
           Where Code Meets <span className="italic text-white/60">Community.</span>
         </h2>
       </div>
