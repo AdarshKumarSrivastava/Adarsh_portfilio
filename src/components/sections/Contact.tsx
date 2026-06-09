@@ -118,8 +118,8 @@ export default function Contact() {
       if (!res.ok) throw new Error("Failed to send message");
       setSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setSubmitting(false);
     }

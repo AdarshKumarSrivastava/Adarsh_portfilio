@@ -151,9 +151,6 @@ export default function Nexido() {
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-
-    let observer: IntersectionObserver;
-
     const ctx = gsap.context(() => {
       // Pin the header while cards scroll up
       if (headerRef.current && containerRef.current) {
@@ -202,7 +199,7 @@ export default function Nexido() {
     });
 
     // Typewriter logic for QuantCraft stat
-    observer = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && typewriterRef.current) {
         const text = "National Level · 500+ Developers";
         let i = 0;

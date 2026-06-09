@@ -76,7 +76,7 @@ export default function Credentials() {
                     </h3>
                     <p className="text-blue-400 font-mono text-sm tracking-[0.2em] uppercase mb-6">IIT Guwahati</p>
                     <p className="text-secondary font-sans text-base leading-relaxed font-light">
-                      Mastered rigorous foundations of machine learning, statistical modeling, and data analytics from one of India's premier engineering institutes, bringing academic excellence into production systems.
+                      Mastered rigorous foundations of machine learning, statistical modeling, and data analytics from one of India&apos;s premier engineering institutes, bringing academic excellence into production systems.
                     </p>
                   </div>
                   

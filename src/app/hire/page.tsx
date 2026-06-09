@@ -116,8 +116,8 @@ export default function HireMe() {
       if (!res.ok) throw new Error("Failed to send message");
       setSubmitted(true);
       setFormData({ email: "", role: "", budget: "", message: "" });
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setSubmitting(false);
     }
@@ -149,14 +149,14 @@ export default function HireMe() {
             <span className="text-accent font-mono text-[10px] tracking-[0.4em] uppercase">Recruitment Portal</span>
           </div>
           <h1 className="font-heading text-5xl md:text-7xl font-medium tracking-tight text-white mb-6 leading-tight">
-            Let's discuss your <span className="italic font-serif text-white/40">next hire</span>.
+            Let&apos;s discuss your <span className="italic font-serif text-white/40">next hire</span>.
           </h1>
           <p className="text-secondary font-sans text-lg font-light leading-relaxed max-w-md mb-12">
             I specialize in architecting scalable, ultra-premium digital experiences. If you have an open role that demands a rare blend of engineering precision and design mastery, I’m ready to listen.
           </p>
 
           <div className="flex items-center gap-4">
-            {socialLinks.map((l) => (
+            {socials.map((l) => (
               <MagneticButton key={l.label} as="a" href={l.href} variant="icon" aria-label={l.label}>
                 {l.icon}
               </MagneticButton>
