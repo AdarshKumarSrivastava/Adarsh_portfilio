@@ -253,18 +253,15 @@ html.lenis, html.lenis body {
 }
 
 /* =========================================
-   DUAL MARQUEE HOVER (NEXIDO)
+   DUAL MARQUEE (NEXIDO)
    ========================================= */
-.marquee-container:hover .animate-marquee,
-.marquee-container:hover .animate-marquee-reverse {
-  animation-duration: 43.75s !important;
-  transition: animation-duration 0.8s ease;
-}
 .animate-marquee-top { animation: marquee 35s linear infinite; }
 .animate-marquee-bottom { animation: marquee-reverse 50s linear infinite; }
 
-.marquee-container:hover .animate-marquee-top { animation-duration: 43.75s; }
-.marquee-container:hover .animate-marquee-bottom { animation-duration: 62.5s; }
+.marquee-container {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
 
 /* =========================================
    MAGNETIC BUTTON ENGINEERED GLASS

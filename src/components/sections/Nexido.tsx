@@ -21,24 +21,24 @@ function AnimatedCounter({ target, suffix = "" }: { target: number, suffix?: str
       let current = 0;
       const duration = 1800;
       const startTime = performance.now();
-      
+
       const update = (currentTime: number) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         // easeOutQuart
         const ease = 1 - Math.pow(1 - progress, 4);
         current = Math.floor(target * ease);
-        
+
         setCount(current);
-        
+
         if (progress < 1) {
           requestAnimationFrame(update);
         } else {
           setCount(target);
         }
       };
-      
+
       requestAnimationFrame(update);
     }
   }, [inView, target]);
@@ -53,7 +53,7 @@ function AnimatedCounter({ target, suffix = "" }: { target: number, suffix?: str
 function DualMarquee() {
   const wordsRow1 = ["QuantCraft", "Hackathons", "Community", "Scale", "Engineering", "Design"];
   const wordsRow2 = ["Innovation", "TCU", "SparkX", "Nexido", "Leadership", "Future"];
-  
+
   return (
     <div className="group w-full overflow-hidden border-y border-white/[0.05] py-8 my-24 bg-surface/50 backdrop-blur-sm relative z-20">
       <div className="marquee-container flex flex-col gap-6">
@@ -105,7 +105,7 @@ function PillarCard({ pillar, index }: { pillar: typeof pillars[0], index: numbe
   const startX = index % 2 === 0 ? 50 : -50;
 
   return (
-    <div 
+    <div
       ref={cardRef}
       className="pillar-card relative glass p-10 rounded-2xl flex flex-col justify-between min-h-[320px] group hover:bg-white/[0.05] transition-colors duration-500 will-change-transform opacity-0"
       style={{ transform: `translate3d(${startX}px, 60px, 0)` }}
@@ -214,7 +214,7 @@ export default function Nexido() {
         observer.disconnect();
       }
     }, { threshold: 0.5 });
-    
+
     if (typewriterRef.current) {
       observer.observe(typewriterRef.current);
     }
@@ -227,7 +227,7 @@ export default function Nexido() {
 
   return (
     <section ref={containerRef} id="nexido" className="relative w-full bg-background pt-24 pb-12 overflow-hidden">
-      
+
       {/* Subtle Noise Turbulence Background */}
       <div className="absolute inset-0 z-0 opacity-20 pointer-events-none mix-blend-overlay" style={{
         backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E\")"
@@ -240,8 +240,8 @@ export default function Nexido() {
 
       {/* Pinned Header */}
       <div ref={headerRef} className="w-full h-[40vh] flex flex-col items-center justify-center text-center px-6 z-30 pointer-events-none will-change-transform">
-        <span className="text-accent font-mono text-sm tracking-[0.3em] uppercase mb-4">Nexido</span>
-        <h2 className="font-heading text-6xl md:text-8xl font-medium tracking-tight text-white">
+        <span className="text-accent font-mono text-m tracking-[0.3em] uppercase mb-4">Nexido</span>
+        <h2 className="font-heading text-7xl md:text-9xl font-medium tracking-tight text-white leading-[1.1]">
           Where Code Meets <span className="italic text-white/60">Community.</span>
         </h2>
       </div>
@@ -250,7 +250,7 @@ export default function Nexido() {
       <div className="h-[40vh]" />
 
       <div className="relative z-20 container mx-auto px-6 lg:px-16 max-w-7xl">
-        
+
         {/* QuantCraft Hero Card */}
         <div className="conic-border-card w-full p-12 md:p-16 mb-32 flex flex-col items-center justify-center text-center shadow-[0_0_50px_rgba(108,99,255,0.1)]">
           <span ref={typewriterRef} className="font-mono text-[11px] tracking-[0.3em] text-accent uppercase mb-6 min-h-[16px] block"></span>

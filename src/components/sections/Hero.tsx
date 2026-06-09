@@ -93,6 +93,14 @@ function RevealHeadline() {
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showButtons, setShowButtons] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile(); // Check immediately on mount
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
     <section
@@ -100,8 +108,8 @@ export default function Hero() {
       ref={containerRef}
       className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden"
     >
-      {/* 3D background */}
-      <HeroScene />
+      {/* 3D background - Disabled on mobile for 100% responsive performance */}
+      {!isMobile && <HeroScene />}
 
       {/* Multi-layer depth gradients */}
       <div className="absolute inset-0 pointer-events-none z-[1]">
