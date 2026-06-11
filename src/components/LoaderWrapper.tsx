@@ -95,7 +95,7 @@ export default function LoaderWrapper({ children }: { children: React.ReactNode 
           {/* Top Half */}
           <div className="loader-top flex-1 bg-[#07080f] overflow-hidden relative">
             <div className="absolute bottom-0 left-0 w-full flex justify-center translate-y-1/2">
-              <h1 className="loader-letters font-heading text-[#f0eeff] uppercase tracking-[0.5em] flex" style={{ fontSize: "clamp(5rem, 12vw, 9rem)", lineHeight: 1 }}>
+              <h1 className="loader-letters font-heading text-[#f0eeff] uppercase tracking-[0.3em] md:tracking-[0.5em] flex" style={{ fontSize: "clamp(2rem, 10vw, 9rem)", lineHeight: 1 }}>
                 {letters.map((char, i) => (
                   <span key={i}>{char}</span>
                 ))}
@@ -125,7 +125,7 @@ export default function LoaderWrapper({ children }: { children: React.ReactNode 
           {/* Bottom Half */}
           <div className="loader-bottom flex-1 bg-[#07080f] overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full flex justify-center -translate-y-1/2">
-              <h1 className="loader-letters font-heading text-[#f0eeff] uppercase tracking-[0.5em] flex" style={{ fontSize: "clamp(5rem, 12vw, 9rem)", lineHeight: 1 }}>
+              <h1 className="loader-letters font-heading text-[#f0eeff] uppercase tracking-[0.3em] md:tracking-[0.5em] flex" style={{ fontSize: "clamp(2rem, 10vw, 9rem)", lineHeight: 1 }}>
                 {letters.map((char, i) => (
                   <span key={i} className="opacity-0">{char}</span>
                 ))}
