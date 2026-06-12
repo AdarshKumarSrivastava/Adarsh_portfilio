@@ -9,10 +9,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#07080f",
-        backgroundAlt: "#0d0d1a",
+        background: "#0a0c16",
+        backgroundAlt: "#141424",
         foreground: "#f0eeff",
-        secondary: "#8585a8",
+        secondary: "#a3a3c2",
         accent: {
           DEFAULT: "#6c63ff", // Muted violet
           hover: "#847dff",

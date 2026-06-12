@@ -141,10 +141,15 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   useEffect(() => {
     if (project) {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ""; };
+    return () => { 
+      document.body.style.overflow = ""; 
+      document.documentElement.style.overflow = ""; 
+    };
   }, [project]);
 
   // Close on Escape
@@ -177,6 +182,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             onClick={(e) => e.stopPropagation()}
             className="relative w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] bg-surface border border-white/[0.06] rounded-t-3xl md:rounded-3xl overflow-y-auto overflow-x-hidden"
             style={{ scrollbarWidth: "none" }}
+            data-lenis-prevent="true"
           >
             {/* Sticky header bar */}
             <div className="sticky top-0 z-10 flex items-center justify-between px-6 md:px-10 py-4 bg-surface/90 backdrop-blur-md border-b border-white/[0.04]">

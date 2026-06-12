@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-[#07080f] text-[#f0eeff] antialiased selection:bg-[#6c63ff]/30 selection:text-white overflow-x-hidden;
+    @apply bg-background text-foreground antialiased selection:bg-[#6c63ff]/30 selection:text-white overflow-x-hidden;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   }
 

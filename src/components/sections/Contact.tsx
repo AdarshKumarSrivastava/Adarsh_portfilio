@@ -166,9 +166,17 @@ export default function Contact() {
             <ScrollReveal animation="fade-up" delay={200}>
               <div className="flex items-center gap-4">
                 {socialLinks.map((l) => (
-                  <MagneticButton key={l.label} as="a" href={l.href} variant="icon" aria-label={l.label}>
-                    {l.icon}
-                  </MagneticButton>
+                  <a
+                    key={l.label}
+                    href={l.href}
+                    aria-label={l.label}
+                    className="inline-flex items-center justify-center rounded-full font-sans tracking-wide engineered-glass gpu-accelerate w-12 h-12 hover:bg-white/10 hover:scale-110 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300 ease-out"
+                    data-cursor-interactive
+                  >
+                    <span className="relative z-10 pointer-events-none flex items-center gap-2">
+                      {l.icon}
+                    </span>
+                  </a>
                 ))}
               </div>
             </ScrollReveal>

@@ -21,7 +21,7 @@ export default function LoaderWrapper({ children }: { children: React.ReactNode 
     // 2. Letters fade in staggered, soft and cinematic
     tl.to(".loader-letters span", {
       opacity: 1,
-      duration: 0.8, 
+      duration: 0.8,
       stagger: 0.15,
       ease: "power3.inOut",
     });
@@ -93,7 +93,7 @@ export default function LoaderWrapper({ children }: { children: React.ReactNode 
       {isLoading && (
         <div className="fixed inset-0 z-[9999] pointer-events-none flex flex-col">
           {/* Top Half */}
-          <div className="loader-top flex-1 bg-[#07080f] overflow-hidden relative">
+          <div className="loader-top flex-1 bg-[#07080f] overflow-hidden relative will-change-transform transform-gpu">
             <div className="absolute bottom-0 left-0 w-full flex justify-center translate-y-1/2">
               <h1 className="loader-letters font-heading text-[#f0eeff] uppercase tracking-[0.3em] md:tracking-[0.5em] flex" style={{ fontSize: "clamp(2rem, 10vw, 9rem)", lineHeight: 1 }}>
                 {letters.map((char, i) => (
@@ -118,12 +118,12 @@ export default function LoaderWrapper({ children }: { children: React.ReactNode 
             </svg>
             {/* The progress line */}
             <div className="w-[200px] h-[1px] bg-white/10 relative overflow-hidden">
-              <div className="loader-progress absolute top-0 left-0 h-full w-full bg-[#6c63ff]"></div>
+              <div className="loader-progress absolute top-0 left-0 h-full w-full bg-[#6c63ff] will-change-transform transform-gpu"></div>
             </div>
           </div>
 
           {/* Bottom Half */}
-          <div className="loader-bottom flex-1 bg-[#07080f] overflow-hidden relative">
+          <div className="loader-bottom flex-1 bg-[#07080f] overflow-hidden relative will-change-transform transform-gpu">
             <div className="absolute top-0 left-0 w-full flex justify-center -translate-y-1/2">
               <h1 className="loader-letters font-heading text-[#f0eeff] uppercase tracking-[0.3em] md:tracking-[0.5em] flex" style={{ fontSize: "clamp(2rem, 10vw, 9rem)", lineHeight: 1 }}>
                 {letters.map((char, i) => (

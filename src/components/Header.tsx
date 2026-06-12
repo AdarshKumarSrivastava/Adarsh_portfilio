@@ -65,11 +65,10 @@ export default function Header() {
         initial={{ y: -100, opacity: 0, x: "-50%" }}
         animate={{ y: 0, opacity: 1, x: "-50%" }}
         transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-6 left-1/2 z-50 w-[90%] max-w-5xl transition-all duration-700 ${
-          isScrolled
-            ? "glass-panel rounded-full px-6 py-3"
-            : "bg-transparent px-6 py-4"
-        }`}
+        className={`fixed top-6 left-1/2 z-50 w-[90%] max-w-5xl transition-all duration-700 ${isScrolled
+          ? "glass-panel rounded-full px-6 py-3"
+          : "bg-transparent px-6 py-4"
+          }`}
       >
         <div className="flex items-center justify-between">
           {/* Logo */}

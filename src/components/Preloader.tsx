@@ -14,7 +14,7 @@ export default function Preloader() {
       gsap.fromTo(
         "#main-content",
         { scale: 0.97, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 1.2, ease: "power3.inOut" }
+        { scale: 1, opacity: 1, duration: 1.2, ease: "power3.inOut", clearProps: "transform" }
       );
     }, 1800);
 

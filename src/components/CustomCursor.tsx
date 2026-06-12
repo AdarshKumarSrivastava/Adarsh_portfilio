@@ -118,13 +118,8 @@ export default function CustomCursor() {
         ringRef.current.style.width = `${ringSize.current}px`;
         ringRef.current.style.height = `${ringSize.current}px`;
         
-        if (ringBlur === "0px") {
-          ringRef.current.style.backdropFilter = "none";
-          ringRef.current.style.backgroundColor = "transparent";
-        } else {
-          ringRef.current.style.backdropFilter = `blur(${ringBlur}) saturate(140%)`;
-          ringRef.current.style.backgroundColor = "rgba(108,99,255,0.04)";
-        }
+        ringRef.current.style.backdropFilter = "none";
+        ringRef.current.style.backgroundColor = "transparent";
         
         ringRef.current.style.borderColor = ringBorderColor;
         ringRef.current.style.borderStyle = ringBorderStyle;

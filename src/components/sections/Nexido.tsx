@@ -153,27 +153,18 @@ export default function Nexido() {
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
       // Pin the header while cards scroll up
-      if (headerRef.current && containerRef.current) {
-        ScrollTrigger.create({
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          pin: headerRef.current,
-          pinSpacing: false,
-          invalidateOnRefresh: true,
-        });
-
+      if (headerRef.current) {
         // Blur and dim the text progressively so it stays visible like a watermark and fades slowly
         gsap.to(headerRef.current, {
-          filter: "blur(8px)",
-          opacity: 0.15,
-          scale: 0.95,
+          filter: "blur(12px)",
+          opacity: 0,
+          scale: 0.9,
           ease: "none",
           scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
+            trigger: headerRef.current,
+            start: "top 20%",
             end: "bottom top",
-            scrub: 1, // Add scrub smoothing to prevent instant jerks when scrolling fast
+            scrub: true, // Smooth scrub as it scrolls up
           }
         });
       }
@@ -226,7 +217,7 @@ export default function Nexido() {
   }, []);
 
   return (
-    <section ref={containerRef} id="nexido" className="relative w-full bg-background pt-24 pb-12 overflow-hidden">
+    <section ref={containerRef} id="nexido" className="relative w-full bg-background pt-4 md:pt-8 pb-12 overflow-hidden">
 
       {/* Subtle Noise Turbulence Background */}
       <div className="absolute inset-0 z-0 opacity-20 pointer-events-none mix-blend-overlay" style={{
@@ -246,10 +237,9 @@ export default function Nexido() {
         </h2>
       </div>
 
-      {/* Spacer to allow scroll before cards overlap */}
-      <div className="h-[40vh]" />
+      {/* Spacer removed because header is no longer pinned */}
 
-      <div className="relative z-20 container mx-auto px-6 lg:px-16 max-w-7xl">
+      <div className="relative z-20 container mx-auto px-6 lg:px-16 max-w-7xl mt-16 md:mt-32">
 
         {/* QuantCraft Hero Card */}
         <div className="conic-border-card w-full p-12 md:p-16 mb-32 flex flex-col items-center justify-center text-center shadow-[0_0_50px_rgba(108,99,255,0.1)]">

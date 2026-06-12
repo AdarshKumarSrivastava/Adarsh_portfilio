@@ -12,7 +12,7 @@ const skillGroups = [
   },
   {
     label: "AI, Data & Libraries",
-    items: ["React.js", "Next.js", "Node.js", "Langchain", "NumPy", "Pandas", "Tailwind CSS"],
+    items: ["React.js", "Next.js", "Node.js", "Langchain", "NumPy", "Pandas", "Tailwind CSS ", "Express"],
     color: "text-white/80",
   },
   {
@@ -36,7 +36,7 @@ function SkillChip({ name, color, delay }: { name: string; color: string; delay:
       whileHover={{ scale: 1.05, borderColor: "rgba(255,255,255,0.2)" }}
       whileTap={{ scale: 0.96 }}
       transition={{ duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] }}
-      viewport={{ once: false, margin: "-60px" }}
+      viewport={{ once: true, margin: "-60px" }}
       className="glass-panel rounded-full px-5 py-2.5 cursor-default hover:bg-white/[0.04] transition-colors"
     >
       <span className={`font-sans text-sm tracking-wide ${color}`}>{name}</span>
@@ -54,7 +54,7 @@ export default function Skills() {
   const bgY = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
 
   return (
-    <section ref={containerRef} className="relative w-full py-24 md:py-36 bg-background overflow-hidden">
+    <section id="skills" ref={containerRef} className="relative w-full py-24 md:py-36 bg-background overflow-hidden">
       {/* Parallax glow background */}
       <motion.div
         style={{ y: bgY }}
