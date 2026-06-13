@@ -70,7 +70,6 @@ export default function CustomCursor() {
       let targetDotOpacity = 1;
 
       // Apply base styles depending on state
-      let ringBlur = "4px";
       let ringBorderColor = "rgba(108,99,255,0.25)";
       let labelOpacity = 0;
       let ringBorderStyle = "solid";
@@ -80,12 +79,10 @@ export default function CustomCursor() {
         targetRingSize = 80;
         targetDotOpacity = 0;
         labelOpacity = 1;
-        ringBlur = "0px";
         ringBorderColor = "rgba(108,99,255,0.8)";
       } else if (state.current.hoverInteractive) {
         targetRingSize = 72;
         targetDotOpacity = 0;
-        ringBlur = "0px";
         ringBorderColor = "rgba(108,99,255,1)";
         ringBorderStyle = "dashed";
         ringTransformExtra = ` rotate(${Date.now() / 5}deg)`; // Crazy rotation effect
