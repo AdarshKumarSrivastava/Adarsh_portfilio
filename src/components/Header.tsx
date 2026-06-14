@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 const navLinks = [
@@ -12,13 +12,111 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
+// Overlay transition state manager
+let setOverlayFn: ((v: boolean) => void) | null = null;
+
+function NavTransitionOverlay() {
+  const [visible, setVisible] = useState(false);
+  const [label, setLabel] = useState("");
+
+  useEffect(() => {
+    setOverlayFn = setVisible;
+    // expose label setter globally too
+    (window as Window & typeof globalThis & { __setNavLabel: (l: string) => void }).__setNavLabel = setLabel;
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          key="nav-overlay"
+          className="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Ink-spread background */}
+          <motion.div
+            className="absolute inset-0"
+            style={{ background: "radial-gradient(ellipse 80% 80% at 50% 50%, rgba(108,99,255,0.18) 0%, rgba(0,0,0,0.72) 70%)" }}
+            initial={{ scale: 0.6, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 1.1, opacity: 0 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          />
+
+          {/* Horizontal scan line */}
+          <motion.div
+            className="absolute left-0 right-0 h-[1px] bg-accent/60"
+            style={{ top: "50%" }}
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            exit={{ scaleX: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          />
+
+          {/* Section label */}
+          <motion.span
+            className="relative z-10 font-heading text-7xl md:text-9xl font-medium text-white/90 tracking-tight select-none"
+            initial={{ y: 40, opacity: 0, filter: "blur(20px)" }}
+            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+            exit={{ y: -40, opacity: 0, filter: "blur(20px)" }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {label}
+          </motion.span>
+
+          {/* Corner particles */}
+          {[
+            { top: "15%", left: "10%", size: 120, delay: 0 },
+            { top: "70%", left: "80%", size: 80, delay: 0.05 },
+            { top: "20%", left: "75%", size: 60, delay: 0.1 },
+            { top: "65%", left: "15%", size: 100, delay: 0.07 },
+          ].map((p, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full border border-accent/30"
+              style={{ top: p.top, left: p.left, width: p.size, height: p.size }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 0.4 }}
+              exit={{ scale: 1.5, opacity: 0 }}
+              transition={{ duration: 0.6, delay: p.delay, ease: "easeOut" }}
+            />
+          ))}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function smoothScrollTo(targetId: string, label: string) {
+  const el = document.querySelector(targetId);
+  if (!el) return;
+
+  // Show overlay with section label
+  if ((window as Window & typeof globalThis & { __setNavLabel?: (l: string) => void }).__setNavLabel) {
+    (window as Window & typeof globalThis & { __setNavLabel: (l: string) => void }).__setNavLabel(label);
+  }
+  setOverlayFn?.(true);
+
+  // After a short visual pause, scroll and hide overlay
+  setTimeout(() => {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    setTimeout(() => {
+      setOverlayFn?.(false);
+    }, 480);
+  }, 380);
+}
+
 function MagneticNavLink({ label, href }: { label: string; href: string }) {
-  const ref = useRef<HTMLAnchorElement>(null);
+  const ref = useRef<HTMLButtonElement>(null);
   const springConfig = { stiffness: 200, damping: 15, mass: 0.1 };
   const x = useSpring(0, springConfig);
   const y = useSpring(0, springConfig);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     x.set((e.clientX - rect.left - rect.width / 2) * 0.35);
     y.set((e.clientY - rect.top - rect.height / 2) * 0.35);
@@ -26,18 +124,23 @@ function MagneticNavLink({ label, href }: { label: string; href: string }) {
 
   const handleMouseLeave = () => { x.set(0); y.set(0); };
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    smoothScrollTo(href, label);
+  };
+
   return (
-    <motion.a
+    <motion.button
       ref={ref}
-      href={href}
       style={{ x, y }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative text-secondary hover:text-white font-sans text-sm tracking-[0.08em] transition-colors duration-300 group py-2 px-1 hover-difference"
+      onClick={handleClick}
+      className="relative text-secondary hover:text-white font-sans text-sm tracking-[0.08em] transition-colors duration-300 group py-2 px-1 hover-difference bg-transparent border-none cursor-pointer"
     >
       {label}
       <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white group-hover:w-full transition-all duration-500" style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }} />
-    </motion.a>
+    </motion.button>
   );
 }
 
@@ -54,8 +157,16 @@ export default function Header() {
     return () => unsub();
   }, [scrollYProgress]);
 
+  const handleMobileNavClick = (href: string, label: string) => {
+    setIsMobileMenuOpen(false);
+    smoothScrollTo(href, label);
+  };
+
   return (
     <>
+      {/* Global overlay for nav transitions */}
+      <NavTransitionOverlay />
+
       <motion.div
         className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent to-accent-hover z-[100] origin-left"
         style={{ scaleX }}
@@ -128,15 +239,17 @@ export default function Header() {
           className="md:hidden overflow-hidden"
         >
           <nav className="flex flex-col gap-4 pb-4">
-            {navLinks.map((link) => (
-              <a
+            {navLinks.map((link, i) => (
+              <motion.button
                 key={link.label}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-secondary hover:text-white font-sans text-lg tracking-wide transition-colors duration-300"
+                onClick={() => handleMobileNavClick(link.href, link.label)}
+                initial={{ x: -20, opacity: 0 }}
+                animate={isMobileMenuOpen ? { x: 0, opacity: 1 } : { x: -20, opacity: 0 }}
+                transition={{ delay: i * 0.06, ease: [0.16, 1, 0.3, 1], duration: 0.4 }}
+                className="text-left text-secondary hover:text-white font-sans text-lg tracking-wide transition-colors duration-300 bg-transparent border-none cursor-pointer"
               >
                 {link.label}
-              </a>
+              </motion.button>
             ))}
             <Link
               href="/hire"
