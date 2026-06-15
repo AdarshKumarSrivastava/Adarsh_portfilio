@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
 import SectionHeading from "@/components/SectionHeading";
 import ScrollReveal from "@/components/ScrollReveal";
 import MagneticButton from "@/components/MagneticButton";
@@ -100,26 +101,70 @@ function FormField({ id, label, type = "text", textarea = false, value, onChange
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const [step, setStep] = useState<"form" | "otp" | "success">("form");
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [userOtp, setUserOtp] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setError("");
 
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error("Failed to send message");
-      setSubmitted(true);
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      // Generate 6-digit OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedOtp(otp);
+
+      // Send OTP to user's email
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_OTP_TEMPLATE_ID!,
+        {
+          to_email: formData.email,
+          otp_code: otp,
+        },
+        { publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY! }
+      );
+      
+      setStep("otp");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : "Failed to send verification code. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleVerifyAndSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (userOtp !== generatedOtp) {
+      setError("Incorrect verification code.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      // Send the actual message to the portfolio owner
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_CONTACT_TEMPLATE_ID!,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          subject: formData.subject || "New Message",
+          message: formData.message,
+        },
+        { publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY! }
+      );
+      setStep("success");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      setUserOtp("");
+      setGeneratedOtp("");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -184,10 +229,10 @@ export default function Contact() {
 
           {/* Right — form */}
           <ScrollReveal animation="fade-up" delay={100}>
-            {!submitted ? (
+            {step === "form" && (
               <form
-                onSubmit={handleSubmit}
-                className="glass rounded-3xl p-8 md:p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]"
+                onSubmit={handleSendOtp}
+                className="glass rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]"
               >
                 <FormField id="name" label="Your Name" value={formData.name} onChange={(v) => setFormData(f => ({...f, name: v}))} />
                 <FormField id="email" label="Email Address" type="email" value={formData.email} onChange={(v) => setFormData(f => ({...f, email: v}))} />
@@ -203,34 +248,78 @@ export default function Contact() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V4a10 10 0 100 20v-4l-3 3 3 3v-2a8 8 0 01-8-8z"/>
                       </svg>
-                      Sending…
+                      Verifying Email…
                     </span>
                   ) : (
                     "Send Message"
                   )}
                 </MagneticButton>
               </form>
-            ) : (
+            )}
+
+            {step === "otp" && (
+              <motion.form
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onSubmit={handleVerifyAndSubmit}
+                className="glass rounded-3xl p-6 sm:p-8 md:p-10 flex flex-col justify-center min-h-[460px] shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]"
+              >
+                <div className="mb-8 text-center">
+                  <h3 className="font-heading text-3xl font-medium text-white mb-2">Verify your email</h3>
+                  <p className="text-secondary font-sans text-sm">
+                    We sent a 6-digit code to <span className="text-accent">{formData.email}</span>
+                  </p>
+                </div>
+                
+                <FormField id="otp" label="Enter 6-digit Code" value={userOtp} onChange={(v) => setUserOtp(v.replace(/\D/g, '').slice(0, 6))} />
+                
+                {error && <p className="text-red-400 font-sans text-xs mb-4 text-center">{error}</p>}
+
+                <div className="flex gap-4 mt-4">
+                  <MagneticButton type="button" onClick={() => setStep("form")} disabled={submitting} variant="ghost" className="w-1/3">
+                    Back
+                  </MagneticButton>
+                  <MagneticButton type="submit" disabled={submitting || userOtp.length !== 6} variant="primary" className="w-2/3">
+                    {submitting ? "Sending..." : "Verify & Send"}
+                  </MagneticButton>
+                </div>
+              </motion.form>
+            )}
+
+            {step === "success" && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="glass rounded-3xl p-10 flex flex-col items-center justify-center text-center min-h-[460px] gap-6 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]"
+                className="glass rounded-3xl p-6 sm:p-8 md:p-10 flex flex-col items-center justify-center text-center min-h-[460px] gap-6 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]"
               >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 300, damping: 20 }}
-                  className="w-16 h-16 rounded-full glass flex items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.3)]"
-                >
-                  <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                </motion.div>
+                <div className="relative">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
+                    className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center border border-accent/30 shadow-[0_0_40px_rgba(59,130,246,0.3)]"
+                  >
+                    <motion.svg className="w-10 h-10 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <motion.polyline 
+                        initial={{ pathLength: 0, opacity: 0 }}
+                        animate={{ pathLength: 1, opacity: 1 }}
+                        transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
+                        points="20 6 9 17 4 12" 
+                      />
+                    </motion.svg>
+                  </motion.div>
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1.5, opacity: 0 }}
+                    transition={{ delay: 0.2, duration: 1.2, ease: "easeOut" }}
+                    className="absolute inset-0 rounded-full border-2 border-accent"
+                  />
+                </div>
                 <div>
                   <h3 className="font-heading text-4xl font-medium tracking-tight text-white mb-2">Message Received</h3>
                   <p className="text-secondary font-sans text-sm mb-6">I&apos;ll get back to you within 24 hours.</p>
-                  <MagneticButton onClick={() => setSubmitted(false)} variant="ghost" className="text-xs">
+                  <MagneticButton onClick={() => setStep("form")} variant="ghost" className="text-xs">
                     Send another message
                   </MagneticButton>
                 </div>

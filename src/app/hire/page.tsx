@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
 import Link from "next/link";
 import MagneticButton from "@/components/MagneticButton";
 
@@ -23,8 +24,8 @@ function FloatingLabel({ htmlFor, label, isFocused, hasValue }: {
   );
 }
 
-function FormField({ id, label, type = "text", textarea = false, value, onChange, required = true }: {
-  id: string; label: string; type?: string; textarea?: boolean; value: string; onChange: (val: string) => void; required?: boolean;
+function FormField({ id, label, type = "text", textarea = false, value, onChange, required = true, placeholder }: {
+  id: string; label: string; type?: string; textarea?: boolean; value: string; onChange: (val: string) => void; required?: boolean; placeholder?: string;
 }) {
   const [focused, setFocused] = useState(false);
 
@@ -39,6 +40,7 @@ function FormField({ id, label, type = "text", textarea = false, value, onChange
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           required={required}
+          placeholder={focused ? placeholder : ""}
           className="w-full bg-transparent hover:bg-accent/[0.04] px-4 pt-4 border-b border-white/10 rounded-t-xl text-white font-sans text-sm outline-none resize-none focus:bg-accent/[0.06] focus:border-accent/50 transition-all duration-500 ease-out"
         />
       ) : (
@@ -50,6 +52,7 @@ function FormField({ id, label, type = "text", textarea = false, value, onChange
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           required={required}
+          placeholder={focused ? placeholder : ""}
           className="w-full bg-transparent hover:bg-accent/[0.04] px-4 h-12 border-b border-white/10 rounded-t-xl text-white font-sans text-sm outline-none focus:bg-accent/[0.06] focus:border-accent/50 transition-all duration-500 ease-out"
         />
       )}
@@ -98,26 +101,70 @@ const socials = [
 
 export default function HireMe() {
   const [formData, setFormData] = useState({ email: "", role: "", budget: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const [step, setStep] = useState<"form" | "otp" | "success">("form");
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [userOtp, setUserOtp] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setError("");
 
     try {
-      const res = await fetch("/api/hire", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error("Failed to send message");
-      setSubmitted(true);
-      setFormData({ email: "", role: "", budget: "", message: "" });
+      // Generate 6-digit OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedOtp(otp);
+
+      // Send OTP to user's email
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_OTP_TEMPLATE_ID!,
+        {
+          to_email: formData.email,
+          otp_code: otp,
+        },
+        { publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY! }
+      );
+      
+      setStep("otp");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : "Failed to send verification code. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleVerifyAndSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (userOtp !== generatedOtp) {
+      setError("Incorrect verification code.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      // Send the actual message to the portfolio owner using the Contact template
+      await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_CONTACT_TEMPLATE_ID!,
+        {
+          from_name: "Recruiter (" + formData.role + ")",
+          from_email: formData.email,
+          subject: "🔥 HIRE INQUIRY: " + formData.role,
+          message: "Budget: " + (formData.budget || "Not Specified") + "\n\nMessage:\n" + formData.message,
+        },
+        { publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY! }
+      );
+      setStep("success");
+      setFormData({ email: "", role: "", budget: "", message: "" });
+      setUserOtp("");
+      setGeneratedOtp("");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -170,12 +217,12 @@ export default function HireMe() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
-          {!submitted ? (
-            <form onSubmit={handleSubmit} className="glass rounded-[2rem] p-8 md:p-12 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]">
+          {step === "form" && (
+            <form onSubmit={handleSendOtp} className="glass rounded-[2rem] p-6 sm:p-8 md:p-12 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]">
               <h3 className="font-heading text-2xl text-white font-medium mb-8">Offer Details</h3>
               <FormField id="email" label="Your Email" type="email" value={formData.email} onChange={v => setFormData(f => ({...f, email: v}))} />
               <FormField id="role" label="Role / Position" value={formData.role} onChange={v => setFormData(f => ({...f, role: v}))} />
-              <FormField id="budget" label="Estimated Compensation / Budget" required={false} value={formData.budget} onChange={v => setFormData(f => ({...f, budget: v}))} />
+              <FormField id="budget" label="Estimated Compensation / Budget" required={false} placeholder="e.g. $5000" value={formData.budget} onChange={v => { const nums = v.replace(/\D/g, ''); setFormData(f => ({...f, budget: nums ? '$' + nums : ''})); }} />
               <FormField id="message" label="Additional Details" textarea value={formData.message} onChange={v => setFormData(f => ({...f, message: v}))} />
 
               {error && <p className="text-red-400 font-sans text-xs mb-4">{error}</p>}
@@ -187,30 +234,74 @@ export default function HireMe() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V4a10 10 0 100 20v-4l-3 3 3 3v-2a8 8 0 01-8-8z"/>
                     </svg>
-                    Dispatching...
+                    Verifying Email...
                   </span>
                 ) : (
-                  "Send Offer Proposal"
+                  "Next: Verify Email"
                 )}
               </MagneticButton>
             </form>
-          ) : (
+          )}
+
+          {step === "otp" && (
+            <motion.form
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              onSubmit={handleVerifyAndSubmit}
+              className="glass rounded-[2rem] p-6 sm:p-8 md:p-12 flex flex-col justify-center min-h-[500px] shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]"
+            >
+              <div className="mb-8 text-center">
+                <h3 className="font-heading text-3xl font-medium text-white mb-3">Verify your email</h3>
+                <p className="text-secondary font-sans text-base">
+                  We sent a 6-digit code to <span className="text-accent">{formData.email}</span>
+                </p>
+              </div>
+              
+              <FormField id="otp" label="Enter 6-digit Code" value={userOtp} onChange={(v) => setUserOtp(v.replace(/\D/g, '').slice(0, 6))} />
+              
+              {error && <p className="text-red-400 font-sans text-xs mb-4 text-center">{error}</p>}
+
+              <div className="flex gap-4 mt-6">
+                <MagneticButton type="button" onClick={() => setStep("form")} disabled={submitting} variant="ghost" className="w-1/3 py-4">
+                  Back
+                </MagneticButton>
+                <MagneticButton type="submit" disabled={submitting || userOtp.length !== 6} variant="primary" className="w-2/3 py-4 text-base">
+                  {submitting ? "Dispatching..." : "Verify & Send Proposal"}
+                </MagneticButton>
+              </div>
+            </motion.form>
+          )}
+
+          {step === "success" && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="glass rounded-[2rem] p-12 flex flex-col items-center justify-center text-center min-h-[500px] gap-8 border border-white/[0.05]"
+              className="glass rounded-[2rem] p-6 sm:p-8 md:p-12 flex flex-col items-center justify-center text-center min-h-[500px] gap-6 shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/[0.05]"
             >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 300, damping: 20 }}
-                className="w-20 h-20 rounded-full glass flex items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.3)]"
-              >
-                <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </motion.div>
+              <div className="relative">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
+                  className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center border border-accent/30 shadow-[0_0_40px_rgba(59,130,246,0.3)]"
+                >
+                  <motion.svg className="w-10 h-10 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <motion.polyline 
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: 1 }}
+                      transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
+                      points="20 6 9 17 4 12" 
+                    />
+                  </motion.svg>
+                </motion.div>
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1.5, opacity: 0 }}
+                  transition={{ delay: 0.2, duration: 1.2, ease: "easeOut" }}
+                  className="absolute inset-0 rounded-full border-2 border-accent"
+                />
+              </div>
               <div>
                 <h3 className="font-heading text-4xl font-medium tracking-tight text-white mb-3">Proposal Received</h3>
                 <p className="text-secondary font-sans text-base mb-8 max-w-xs mx-auto">
