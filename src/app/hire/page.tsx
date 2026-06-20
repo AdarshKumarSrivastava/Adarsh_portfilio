@@ -129,8 +129,9 @@ export default function HireMe() {
       );
       
       setStep("otp");
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to send verification code. Please try again.");
+    } catch (err: any) {
+      console.error("EmailJS Error:", err);
+      setError(err?.text || err?.message || "Failed to send verification code. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -163,8 +164,9 @@ export default function HireMe() {
       setFormData({ email: "", role: "", budget: "", message: "" });
       setUserOtp("");
       setGeneratedOtp("");
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } catch (err: any) {
+      console.error("EmailJS Error:", err);
+      setError(err?.text || err?.message || "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
