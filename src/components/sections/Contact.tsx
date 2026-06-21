@@ -129,9 +129,10 @@ export default function Contact() {
       );
       
       setStep("otp");
-    } catch (err: any) {
+    } catch (err) {
       console.error("EmailJS Error:", err);
-      setError(err?.text || err?.message || "Failed to send verification code. Please try again.");
+      const errorObj = err as { text?: string; message?: string };
+      setError(errorObj?.text || errorObj?.message || "Failed to send verification code. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -164,9 +165,10 @@ export default function Contact() {
       setFormData({ name: "", email: "", subject: "", message: "" });
       setUserOtp("");
       setGeneratedOtp("");
-    } catch (err: any) {
+    } catch (err) {
       console.error("EmailJS Error:", err);
-      setError(err?.text || err?.message || "Something went wrong. Please try again.");
+      const errorObj = err as { text?: string; message?: string };
+      setError(errorObj?.text || errorObj?.message || "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
