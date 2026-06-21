@@ -51,7 +51,7 @@ function RevealHeadline() {
   const letters = "Adarsh".split("");
   // Split from center logic: calculate distance from center for stagger
   const centerIdx = (letters.length - 1) / 2;
-  
+
   return (
     <>
       {letters.map((char, i) => {
@@ -120,7 +120,7 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-6xl mx-auto mt-20">
 
         {/* Main headline */}
-        <h1 
+        <h1
           className="font-heading font-normal tracking-tight text-white mb-6 md:mb-8 leading-[0.8] overflow-hidden"
           style={{ fontSize: "clamp(4rem, 10vw, 8rem)" }}
         >
