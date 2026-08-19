@@ -8,6 +8,33 @@ import ProjectModal, { type ProjectData } from "@/components/ProjectModal";
 
 const projects: ProjectData[] = [
   {
+    title: "Hack in Hills",
+    category: "Hackathon / Event Platform",
+    year: "2026",
+    description: "An immersive expedition-inspired hackathon platform designed for Hack in Hills, combining event information, challenges, schedules, mentors, sponsors and registration into a cinematic interactive experience.",
+    image: "https://hack-in-hills-black.vercel.app/images/hero.jpg",
+    heroImage: "https://hack-in-hills-black.vercel.app/images/hero.jpg",
+    color: "from-orange-500/20 to-amber-500/20",
+    problem:
+      "Traditional hackathon websites often feel like standard corporate event pages, failing to capture the energy, ambition, and unique atmosphere of an expedition-style coding challenge in the Himalayas.",
+    approach:
+      "Designed a highly immersive, cinematic web experience that treats the hackathon like a high-altitude expedition. Built with modern web technologies for fluid scroll animations, topographic preloader, and magnetic interactions to create a premium feel.",
+    techStack: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+    outcomes: [
+      "Delivered a fully responsive cinematic experience with 60fps animations",
+      "Implemented a custom topography preloader and smooth page transitions",
+      "Integrated an interactive expedition map for hackathon tracks",
+      "Achieved a premium Apple-level design aesthetic for high user engagement",
+    ],
+    gallery: [
+      "https://hack-in-hills-black.vercel.app/images/challenges-bg-4k.jpg",
+      "https://hack-in-hills-black.vercel.app/images/tracks-bg-abstract.png",
+      "https://hack-in-hills-black.vercel.app/images/hero.jpg",
+    ],
+    liveUrl: "https://hack-in-hills-black.vercel.app/",
+    githubUrl: undefined,
+  },
+  {
     title: "GenZ AI",
     category: "AI Productivity Platform",
     year: "2024",
