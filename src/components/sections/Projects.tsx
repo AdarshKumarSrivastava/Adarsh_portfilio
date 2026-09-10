@@ -35,6 +35,43 @@ const projects: ProjectData[] = [
     githubUrl: undefined,
   },
   {
+    title: "VK Sentinels",
+    category: "Cybersecurity / Enterprise Platform",
+    year: "2025",
+    description:
+      "A mission-critical digital systems & cyber defense platform featuring zero-trust cybersecurity perimeters, autonomous intelligence, and enterprise-grade cloud architectures.",
+    image:
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop",
+    heroImage:
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop",
+    color: "from-cyan-500/20 to-emerald-500/20",
+    problem:
+      "Enterprises face escalating cyber threats but lack unified platforms that integrate digital engineering, zero-trust security, and autonomous intelligence under one cohesive system — leading to fragmented defenses and operational blind spots.",
+    approach:
+      "Architected a premium enterprise-grade platform with a stunning Apple-inspired UI, featuring glassmorphic navigation, cinematic hero sections, interactive service cards, and smooth scroll-driven animations. Built with React, Vite, and Tailwind CSS for blazing performance.",
+    techStack: [
+      "React",
+      "Vite",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Geist Font",
+    ],
+    outcomes: [
+      "Delivered a production-ready enterprise platform with premium design aesthetics",
+      "Implemented zero-trust architecture messaging with interactive service breakdowns",
+      "Built responsive layouts with 60fps scroll-driven animations and glassmorphism",
+      "Achieved lighthouse performance score of 95+ with optimized asset delivery",
+    ],
+    gallery: [
+      "https://images.unsplash.com/photo-1563986768609-322da13575f2?q=80&w=1470&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?q=80&w=1470&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1470&auto=format&fit=crop",
+    ],
+    liveUrl: "https://vksentinals.vercel.app/",
+    githubUrl: undefined,
+  },
+  {
     title: "GenZ AI",
     category: "AI Productivity Platform",
     year: "2024",
