@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import ProjectModal, { type ProjectData } from "@/components/ProjectModal";
@@ -178,7 +177,7 @@ function ProjectCard({
   
   // Ref for the shutter effect when scrolling into view
   const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { once: false, amount: 0.3 });
+  const isInView = useInView(cardRef, { once: true, amount: 0.3 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -282,7 +281,6 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
       // 1. Staggered card entrance cascade

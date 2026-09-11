@@ -85,7 +85,7 @@ export default function CustomCursor() {
         targetDotOpacity = 0;
         ringBorderColor = "rgba(108,99,255,1)";
         ringBorderStyle = "dashed";
-        ringTransformExtra = ` rotate(${Date.now() / 5}deg)`; // Crazy rotation effect
+        ringTransformExtra = ` rotate(${(performance.now() / 5) % 360}deg)`;
       } else if (state.current.hoverHeading) {
         targetRingSize = 56;
         targetDotWidth = 2;

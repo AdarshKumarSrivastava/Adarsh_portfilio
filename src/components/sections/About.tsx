@@ -1,12 +1,11 @@
 "use client";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
 
-gsap.registerPlugin(ScrollTrigger);
+
 
 const stats = [
   { value: "3+", label: "Projects Shipped" },
@@ -24,12 +23,11 @@ export default function About() {
       // Entry animation
       gsap.fromTo(
         imageContainerRef.current,
-        { scale: 1.1, opacity: 0, filter: "blur(20px)", y: 50 },
+        { scale: 1.1, opacity: 0, y: 50 },
         {
           scale: 1,
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
           ease: "power3.out",
           scrollTrigger: {
             trigger: containerRef.current,

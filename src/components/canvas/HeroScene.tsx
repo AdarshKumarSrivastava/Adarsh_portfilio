@@ -34,14 +34,14 @@ function LuxuryCrystal() {
     <Float speed={2.5} rotationIntensity={0.5} floatIntensity={1.5} floatingRange={[-0.2, 0.2]}>
       <mesh ref={meshRef}>
         {/* A complex, faceted torus knot */}
-        <torusKnotGeometry args={[2, 0.6, 128, 32, 2, 3]} />
+        <torusKnotGeometry args={[2, 0.6, 80, 24, 2, 3]} />
         <MeshTransmissionMaterial 
           background={new THREE.Color("#07080f")}
           backside
-          backsideThickness={2}
-          thickness={1.5}
-          chromaticAberration={0.06}
-          anisotropy={0.2}
+          backsideThickness={1}
+          thickness={1.2}
+          chromaticAberration={0.03}
+          anisotropy={0.1}
           distortion={0.5}
           distortionScale={0.5}
           temporalDistortion={0.1}
@@ -62,7 +62,7 @@ export default function HeroScene() {
   const [pixelRatio, setPixelRatio] = useState(1);
 
   useEffect(() => {
-    setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   }, []);
 
   return (

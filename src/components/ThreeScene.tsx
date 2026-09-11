@@ -119,7 +119,7 @@ function TopographicPlane() {
 
   return (
     <mesh ref={meshRef} position={[0, -2, 0]} rotation={[-Math.PI / 2.5, 0, 0]}>
-      <planeGeometry args={[30, 30, 120, 120]} />
+      <planeGeometry args={[30, 30, 64, 64]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertexShader}
@@ -138,7 +138,7 @@ export default function ThreeScene() {
     <div className="absolute inset-0 z-0 pointer-events-none opacity-50">
       <Canvas
         camera={{ position: [0, 2, 8], fov: 45 }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       >
         <fog attach="fog" args={["#080810", 5, 15]} />

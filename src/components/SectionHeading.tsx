@@ -1,7 +1,6 @@
 "use client";
 import React, { ReactNode, useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollReveal from "@/components/ScrollReveal";
 
 interface SectionHeadingProps {
@@ -56,8 +55,7 @@ export default function SectionHeading({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    
+
     if (!containerRef.current) return;
     
     const words = containerRef.current.querySelectorAll(".word");

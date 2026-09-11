@@ -1,12 +1,10 @@
 "use client";
 import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import ScrollReveal from "@/components/ScrollReveal";
 import SectionHeading from "@/components/SectionHeading";
 import TiltCard from "@/components/TiltCard";
 
-gsap.registerPlugin(ScrollTrigger);
+
 
 export default function Credentials() {
   const containerRef = useRef<HTMLDivElement>(null);

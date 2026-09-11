@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useInView } from "framer-motion";
 
 const pillars = [
@@ -150,13 +149,11 @@ export default function Nexido() {
   const typewriterRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
       // Pin the header while cards scroll up
       if (headerRef.current) {
         // Blur and dim the text progressively so it stays visible like a watermark and fades slowly
         gsap.to(headerRef.current, {
-          filter: "blur(12px)",
           opacity: 0,
           scale: 0.9,
           ease: "none",
@@ -164,7 +161,7 @@ export default function Nexido() {
             trigger: headerRef.current,
             start: "top 20%",
             end: "bottom top",
-            scrub: true, // Smooth scrub as it scrolls up
+            scrub: true,
           }
         });
       }

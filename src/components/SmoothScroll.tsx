@@ -10,6 +10,9 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
   const lenisRef = useRef<any>(null);
 
   useEffect(() => {
+    // Centralized GSAP plugin registration — all components depend on this
+    gsap.registerPlugin(ScrollTrigger);
+
     function update(time: number) {
       lenisRef.current?.lenis?.raf(time * 1000);
     }

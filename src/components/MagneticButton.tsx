@@ -26,7 +26,7 @@ export default function MagneticButton({
 
     if (!button || !text) return;
 
-    let rafId: number;
+    let rafId: number | null = null;
     let isHovered = false;
 
     // Targets for lerping
@@ -38,35 +38,6 @@ export default function MagneticButton({
     let currentY = 0;
     let textCurrentX = 0;
     let textCurrentY = 0;
-
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = button.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      const distX = e.clientX - centerX;
-      const distY = e.clientY - centerY;
-      const distance = Math.sqrt(distX * distX + distY * distY);
-
-      // Trigger distance is 100px
-      if (distance < 100) {
-        isHovered = true;
-        // 30% intensity for button shell
-        targetX = distX * 0.30;
-        targetY = distY * 0.30;
-      } else {
-        isHovered = false;
-        targetX = 0;
-        targetY = 0;
-      }
-
-      // Update spotlight CSS vars (only matters when hovered really, but we can track it globally or locally)
-      // The CSS radial gradient expects pixel coords relative to the button
-      const localX = e.clientX - rect.left;
-      const localY = e.clientY - rect.top;
-      button.style.setProperty('--mouse-x', `${localX}px`);
-      button.style.setProperty('--mouse-y', `${localY}px`);
-    };
 
     const render = () => {
       // Lerp logic
@@ -80,11 +51,15 @@ export default function MagneticButton({
       textCurrentX += (targetTextX - textCurrentX) * 0.1;
       textCurrentY += (targetTextY - textCurrentY) * 0.1;
 
-      if (!isHovered && Math.abs(currentX) < 0.1 && Math.abs(currentY) < 0.1) {
+      const settled = !isHovered && Math.abs(currentX) < 0.1 && Math.abs(currentY) < 0.1;
+
+      if (settled) {
         button.style.transform = `translate3d(0,0,0)`;
         text.style.transform = `translate3d(0,0,0)`;
         button.classList.add("spring-back");
         text.classList.add("spring-back");
+        rafId = null; // Stop the loop when settled
+        return;
       } else {
         button.classList.remove("spring-back");
         text.classList.remove("spring-back");
@@ -95,12 +70,51 @@ export default function MagneticButton({
       rafId = requestAnimationFrame(render);
     };
 
+    const startLoop = () => {
+      if (rafId === null) {
+        rafId = requestAnimationFrame(render);
+      }
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = button.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const distX = e.clientX - centerX;
+      const distY = e.clientY - centerY;
+      const distance = Math.sqrt(distX * distX + distY * distY);
+
+      // Trigger distance is 100px
+      if (distance < 100) {
+        if (!isHovered) {
+          isHovered = true;
+          startLoop();
+        }
+        // 30% intensity for button shell
+        targetX = distX * 0.30;
+        targetY = distY * 0.30;
+      } else {
+        if (isHovered) {
+          isHovered = false;
+          targetX = 0;
+          targetY = 0;
+          startLoop(); // Keep running to settle back
+        }
+      }
+
+      // Update spotlight CSS vars
+      const localX = e.clientX - rect.left;
+      const localY = e.clientY - rect.top;
+      button.style.setProperty('--mouse-x', `${localX}px`);
+      button.style.setProperty('--mouse-y', `${localY}px`);
+    };
+
     window.addEventListener("mousemove", onMouseMove);
-    rafId = requestAnimationFrame(render);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
-      cancelAnimationFrame(rafId);
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
   }, []);
 
