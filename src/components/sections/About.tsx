@@ -47,7 +47,7 @@ export default function About() {
             trigger: imageContainerRef.current,
             start: "top bottom",
             end: "bottom top",
-            scrub: true,
+            scrub: 1,
           },
         });
       }

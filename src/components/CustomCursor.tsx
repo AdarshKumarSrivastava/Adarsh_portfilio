@@ -31,16 +31,33 @@ export default function CustomCursor() {
 
     setIsVisible(true);
 
+    let rafId: number | null = null;
+
+    const startLoop = () => {
+      if (rafId === null) {
+        rafId = requestAnimationFrame(render);
+      }
+    };
+
     const onMouseMove = (e: MouseEvent) => {
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
+      startLoop();
     };
-    const onMouseDown = () => (state.current.mouseDown = true);
-    const onMouseUp = () => (state.current.mouseDown = false);
 
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mouseup", onMouseUp);
+    const onMouseDown = () => {
+      state.current.mouseDown = true;
+      startLoop();
+    };
+
+    const onMouseUp = () => {
+      state.current.mouseDown = false;
+      startLoop();
+    };
+
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    window.addEventListener("mousedown", onMouseDown, { passive: true });
+    window.addEventListener("mouseup", onMouseUp, { passive: true });
 
     // Initial position fix
     dotPos.current.x = window.innerWidth / 2;
@@ -50,7 +67,9 @@ export default function CustomCursor() {
     mouse.current.x = window.innerWidth / 2;
     mouse.current.y = window.innerHeight / 2;
 
-    let rafId: number;
+    let lastBorderColor = "";
+    let lastBorderStyle = "";
+    let lastLabelOpacity = -1;
 
     const render = () => {
       const targetX = mouse.current.x;
@@ -104,36 +123,52 @@ export default function CustomCursor() {
       dotHeight.current += (targetDotHeight - dotHeight.current) * 0.2;
       dotOpacity.current += (targetDotOpacity - dotOpacity.current) * 0.2;
 
-      // Apply transformations
+      // Apply GPU-accelerated transformations without touching layout width/height
       if (dotRef.current && ringRef.current && labelRef.current) {
-        dotRef.current.style.transform = `translate3d(${dotPos.current.x}px, ${dotPos.current.y}px, 0) translate(-50%, -50%)`;
-        dotRef.current.style.width = `${dotWidth.current}px`;
-        dotRef.current.style.height = `${dotHeight.current}px`;
+        const dotScaleX = dotWidth.current / 8;
+        const dotScaleY = dotHeight.current / 8;
+        dotRef.current.style.transform = `translate3d(${dotPos.current.x}px, ${dotPos.current.y}px, 0) translate(-50%, -50%) scale(${dotScaleX}, ${dotScaleY})`;
         dotRef.current.style.opacity = `${dotOpacity.current}`;
 
-        ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0) translate(-50%, -50%)${ringTransformExtra}`;
-        ringRef.current.style.width = `${ringSize.current}px`;
-        ringRef.current.style.height = `${ringSize.current}px`;
+        const ringScale = ringSize.current / 44;
+        ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0) translate(-50%, -50%) scale(${ringScale})${ringTransformExtra}`;
         
-        ringRef.current.style.backdropFilter = "none";
-        ringRef.current.style.backgroundColor = "transparent";
-        
-        ringRef.current.style.borderColor = ringBorderColor;
-        ringRef.current.style.borderStyle = ringBorderStyle;
-        
-        labelRef.current.style.opacity = `${labelOpacity}`;
+        if (ringBorderColor !== lastBorderColor) {
+          ringRef.current.style.borderColor = ringBorderColor;
+          lastBorderColor = ringBorderColor;
+        }
+        if (ringBorderStyle !== lastBorderStyle) {
+          ringRef.current.style.borderStyle = ringBorderStyle;
+          lastBorderStyle = ringBorderStyle;
+        }
+        if (labelOpacity !== lastLabelOpacity) {
+          labelRef.current.style.opacity = `${labelOpacity}`;
+          lastLabelOpacity = labelOpacity;
+        }
+      }
+
+      const settled =
+        !state.current.hoverInteractive &&
+        Math.abs(targetX - dotPos.current.x) < 0.05 &&
+        Math.abs(targetY - dotPos.current.y) < 0.05 &&
+        Math.abs(targetX - ringPos.current.x) < 0.05 &&
+        Math.abs(targetY - ringPos.current.y) < 0.05;
+
+      if (settled) {
+        rafId = null;
+        return;
       }
 
       rafId = requestAnimationFrame(render);
     };
 
-    rafId = requestAnimationFrame(render);
+    startLoop();
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mouseup", onMouseUp);
-      cancelAnimationFrame(rafId);
+      if (rafId !== null) cancelAnimationFrame(rafId);
     };
   }, []);
 
@@ -172,8 +207,8 @@ export default function CustomCursor() {
       state.current.hoverDrag = false;
     };
 
-    document.addEventListener("mouseover", onMouseOver);
-    document.addEventListener("mouseout", onMouseOut);
+    document.addEventListener("mouseover", onMouseOver, { passive: true });
+    document.addEventListener("mouseout", onMouseOut, { passive: true });
 
     return () => {
       document.removeEventListener("mouseover", onMouseOver);
@@ -187,11 +222,11 @@ export default function CustomCursor() {
     <>
       <div
         ref={dotRef}
-        className="fixed top-0 left-0 rounded-full bg-[rgba(108,99,255,0.9)] pointer-events-none z-[1000] will-change-transform flex items-center justify-center overflow-hidden"
+        className="fixed top-0 left-0 w-2 h-2 rounded-full bg-[rgba(108,99,255,0.9)] pointer-events-none z-[1000] will-change-transform flex items-center justify-center overflow-hidden"
       />
       <div
         ref={ringRef}
-        className="fixed top-0 left-0 rounded-full pointer-events-none z-[999] will-change-transform flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] bg-[rgba(108,99,255,0.04)] border-[rgba(108,99,255,0.25)] border transition-[border-color] duration-300"
+        className="fixed top-0 left-0 w-11 h-11 rounded-full pointer-events-none z-[999] will-change-transform flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] bg-[rgba(108,99,255,0.04)] border-[rgba(108,99,255,0.25)] border transition-[border-color] duration-300"
       >
         <span ref={labelRef} className="font-mono text-[10px] tracking-widest text-[#f0eeff] uppercase font-semibold">
           Drag

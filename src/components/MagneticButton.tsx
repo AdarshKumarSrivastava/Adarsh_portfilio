@@ -76,44 +76,50 @@ export default function MagneticButton({
       }
     };
 
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = button.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+    const handleMouseEnter = () => {
+      isHovered = true;
+      cachedRect = button.getBoundingClientRect();
+      startLoop();
+    };
+
+    let cachedRect: DOMRect | null = null;
+
+    const handleMouseMove = (evt: Event) => {
+      const e = evt as MouseEvent;
+      if (!cachedRect) {
+        cachedRect = button.getBoundingClientRect();
+      }
+      const centerX = cachedRect.left + cachedRect.width / 2;
+      const centerY = cachedRect.top + cachedRect.height / 2;
 
       const distX = e.clientX - centerX;
       const distY = e.clientY - centerY;
-      const distance = Math.sqrt(distX * distX + distY * distY);
 
-      // Trigger distance is 100px
-      if (distance < 100) {
-        if (!isHovered) {
-          isHovered = true;
-          startLoop();
-        }
-        // 30% intensity for button shell
-        targetX = distX * 0.30;
-        targetY = distY * 0.30;
-      } else {
-        if (isHovered) {
-          isHovered = false;
-          targetX = 0;
-          targetY = 0;
-          startLoop(); // Keep running to settle back
-        }
-      }
+      targetX = distX * 0.35;
+      targetY = distY * 0.35;
 
-      // Update spotlight CSS vars
-      const localX = e.clientX - rect.left;
-      const localY = e.clientY - rect.top;
+      const localX = e.clientX - cachedRect.left;
+      const localY = e.clientY - cachedRect.top;
       button.style.setProperty('--mouse-x', `${localX}px`);
       button.style.setProperty('--mouse-y', `${localY}px`);
     };
 
-    window.addEventListener("mousemove", onMouseMove);
+    const handleMouseLeave = () => {
+      isHovered = false;
+      targetX = 0;
+      targetY = 0;
+      cachedRect = null;
+      startLoop();
+    };
+
+    button.addEventListener("mouseenter", handleMouseEnter);
+    button.addEventListener("mousemove", handleMouseMove, { passive: true });
+    button.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      window.removeEventListener("mousemove", onMouseMove);
+      button.removeEventListener("mouseenter", handleMouseEnter);
+      button.removeEventListener("mousemove", handleMouseMove);
+      button.removeEventListener("mouseleave", handleMouseLeave);
       if (rafId !== null) cancelAnimationFrame(rafId);
     };
   }, []);

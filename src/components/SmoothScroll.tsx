@@ -1,16 +1,23 @@
 "use client";
 
-import { ReactLenis } from "lenis/react";
+import { ReactLenis, useLenis } from "lenis/react";
 import { ReactNode, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+function LenisScrollTriggerBridge() {
+  useLenis(() => {
+    ScrollTrigger.update();
+  });
+  return null;
+}
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const lenisRef = useRef<any>(null);
 
   useEffect(() => {
-    // Centralized GSAP plugin registration — all components depend on this
+    // Centralized GSAP plugin registration
     gsap.registerPlugin(ScrollTrigger);
 
     function update(time: number) {
@@ -18,10 +25,11 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     }
 
     gsap.ticker.add(update);
-    gsap.ticker.lagSmoothing(0);
+    // Smooth out dropped frames instead of jarring jumps
+    gsap.ticker.lagSmoothing(500, 33);
 
     // Global ScrollTrigger config
-    ScrollTrigger.config({ ignoreMobileResize: true });
+    ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize" });
 
     return () => {
       gsap.ticker.remove(update);
@@ -41,6 +49,7 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
         touchMultiplier: 1.5,
       }}
     >
+      <LenisScrollTriggerBridge />
       {children}
     </ReactLenis>
   );

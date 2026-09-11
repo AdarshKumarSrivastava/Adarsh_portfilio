@@ -59,16 +59,35 @@ function LuxuryCrystal() {
 }
 
 export default function HeroScene() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [pixelRatio, setPixelRatio] = useState(1);
+  const [isInView, setIsInView] = useState(true);
 
   useEffect(() => {
     setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <div className="absolute top-0 right-0 w-full h-full z-0 overflow-hidden pointer-events-none flex items-center justify-center opacity-100">
+    <div
+      ref={containerRef}
+      className="absolute top-0 right-0 w-full h-full z-0 overflow-hidden pointer-events-none flex items-center justify-center opacity-100"
+    >
       <Suspense fallback={null}>
         <Canvas
+          frameloop={isInView ? "always" : "never"}
           camera={{ position: [0, 0, 8], fov: 45 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           dpr={pixelRatio}

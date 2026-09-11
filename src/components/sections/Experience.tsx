@@ -97,7 +97,7 @@ export default function Experience() {
           {/* Animated spine */}
           <div
             ref={lineRef}
-            className="absolute left-4 md:left-[50%] top-0 w-[2px] bg-gradient-to-b from-accent to-accent/20 -translate-x-1/2 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+            className="absolute left-4 md:left-[50%] top-0 w-[2px] bg-gradient-to-b from-accent to-accent/20 -translate-x-1/2 origin-top will-change-transform"
           />
 
           <div className="space-y-16">

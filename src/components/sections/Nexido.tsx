@@ -161,7 +161,7 @@ export default function Nexido() {
             trigger: headerRef.current,
             start: "top 20%",
             end: "bottom top",
-            scrub: true,
+            scrub: 1,
           }
         });
       }

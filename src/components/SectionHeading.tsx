@@ -12,18 +12,19 @@ interface SectionHeadingProps {
 }
 
 // A simple utility to split strings/ReactNodes into word-wrapped spans safely
-function splitByWord(node: ReactNode): ReactNode[] {
+function splitByWord(node: ReactNode, prefix = "w"): ReactNode[] {
   if (typeof node === "string") {
-    return node.split(" ").map((word, i) => (
-      <span key={i} className="word-wrap inline-block whitespace-pre">
+    const words = node.split(" ");
+    return words.map((word, i) => (
+      <span key={`${prefix}-${i}`} className="word-wrap inline-block whitespace-pre">
         <span className="word inline-block will-change-transform opacity-0 translate-y-[50px] rotate-x-[15deg]">{word}</span>
-        {i !== node.split(" ").length - 1 && " "}
+        {i !== words.length - 1 && " "}
       </span>
     ));
   }
   
   if (Array.isArray(node)) {
-    return node.map(splitByWord).flat();
+    return node.map((child, idx) => splitByWord(child, `${prefix}-${idx}`)).flat();
   }
   
   if (React.isValidElement(node)) {
@@ -33,8 +34,8 @@ function splitByWord(node: ReactNode): ReactNode[] {
       return [
         React.cloneElement(
           node,
-          { ...childProps, key: Math.random() },
-          splitByWord(childProps.children)
+          { ...childProps, key: node.key || `${prefix}-elem` },
+          splitByWord(childProps.children, `${prefix}-c`)
         )
       ];
     }
