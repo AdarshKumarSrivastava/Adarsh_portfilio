@@ -149,10 +149,16 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const wasScrolled = useRef(false);
 
   useEffect(() => {
     const unsub = scrollYProgress.on("change", (v) => {
-      setIsScrolled(v > 0.02);
+      const scrolled = v > 0.02;
+      // Only trigger re-render when the value actually changes
+      if (scrolled !== wasScrolled.current) {
+        wasScrolled.current = scrolled;
+        setIsScrolled(scrolled);
+      }
     });
     return () => unsub();
   }, [scrollYProgress]);

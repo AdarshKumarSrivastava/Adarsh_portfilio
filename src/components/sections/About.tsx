@@ -79,7 +79,7 @@ export default function About() {
             />
           </div>
           {/* Tint overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-transparent mix-blend-overlay" />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-transparent" />
           {/* Bottom fade */}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 

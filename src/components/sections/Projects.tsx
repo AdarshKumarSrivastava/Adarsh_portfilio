@@ -238,7 +238,7 @@ function ProjectCard({
         </div>
 
         {/* Gradient overlay */}
-        <div className={`absolute inset-0 bg-gradient-to-tr ${project.color} mix-blend-overlay opacity-40 group-hover:opacity-70 transition-opacity duration-700 z-20`} />
+        <div className={`absolute inset-0 bg-gradient-to-tr ${project.color} opacity-40 group-hover:opacity-70 transition-opacity duration-700 z-20`} />
         <div className="absolute inset-0 bg-gradient-to-t from-[#07080f] via-[#07080f]/40 to-transparent opacity-90 z-20" />
 
         {/* Content */}
@@ -248,7 +248,7 @@ function ProjectCard({
         >
           {/* Top badge */}
           <div className="flex items-center justify-between">
-            <span className="bg-white/10 backdrop-blur-md rounded-full text-white font-mono uppercase tracking-[0.2em] text-[10px] md:text-xs px-5 py-2">
+            <span className="bg-white/10 rounded-full text-white font-mono uppercase tracking-[0.2em] text-[10px] md:text-xs px-5 py-2">
               {project.category}
             </span>
             <span className="text-secondary font-mono text-xs tracking-widest">{project.year}</span>

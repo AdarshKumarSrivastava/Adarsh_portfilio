@@ -191,7 +191,7 @@ export default function CustomCursor() {
       />
       <div
         ref={ringRef}
-        className="fixed top-0 left-0 rounded-full pointer-events-none z-[999] will-change-transform flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] bg-[rgba(108,99,255,0.04)] border-[rgba(108,99,255,0.25)] border transition-[backdrop-filter,border-color] duration-300"
+        className="fixed top-0 left-0 rounded-full pointer-events-none z-[999] will-change-transform flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] bg-[rgba(108,99,255,0.04)] border-[rgba(108,99,255,0.25)] border transition-[border-color] duration-300"
       >
         <span ref={labelRef} className="font-mono text-[10px] tracking-widest text-[#f0eeff] uppercase font-semibold">
           Drag

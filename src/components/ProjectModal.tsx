@@ -170,7 +170,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4 }}
-          className="fixed inset-0 z-[150] bg-black/80 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-6"
+          className="fixed inset-0 z-[150] bg-black/90 flex items-end md:items-center justify-center p-0 md:p-6"
           onClick={onClose}
         >
           <motion.div
@@ -185,7 +185,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             data-lenis-prevent="true"
           >
             {/* Sticky header bar */}
-            <div className="sticky top-0 z-10 flex items-center justify-between px-6 md:px-10 py-4 bg-surface/90 backdrop-blur-md border-b border-white/[0.04]">
+            <div className="sticky top-0 z-10 flex items-center justify-between px-6 md:px-10 py-4 bg-surface border-b border-white/[0.04]">
               <div>
                 <p className="text-secondary font-sans text-[10px] tracking-[0.3em] uppercase">{project.category} · {project.year}</p>
                 <h2 className="font-heading text-xl md:text-2xl font-medium text-white">{project.title}</h2>

@@ -41,15 +41,14 @@
     perspective: 1000px;
   }
 
-  /* Apple-like ultra premium glass */
+  /* Premium glass — solid bg, NO backdrop-filter for 60fps scroll */
   .glass {
-    @apply bg-black/10 backdrop-blur-2xl border border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)];
+    @apply bg-[rgba(7,8,15,0.85)] border border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)];
   }
   
   .glass-panel {
-    background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.00) 100%);
-    backdrop-filter: blur(40px);
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    background: rgba(7, 8, 15, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   }
 
@@ -211,7 +210,6 @@ html.lenis, html.lenis body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events: none;
   opacity: 0.4;
-  mix-blend-mode: overlay;
   z-index: 50;
 }
 
@@ -229,8 +227,7 @@ html.lenis, html.lenis body {
 
 .conic-border-card {
   position: relative;
-  background: rgba(17, 24, 39, 0.7);
-  backdrop-filter: blur(20px);
+  background: rgba(13, 13, 26, 0.95);
   border-radius: 1.5rem;
   z-index: 1;
   overflow: hidden;
@@ -241,7 +238,7 @@ html.lenis, html.lenis body {
   inset: -4px;
   background: conic-gradient(from var(--angle), transparent 70%, rgba(108,99,255,0.8) 100%, #4a3f8f);
   z-index: -1;
-  animation: rotate-border 4s linear infinite;
+  animation: rotate-border 8s linear infinite;
 }
 .conic-border-card::after {
   content: '';
@@ -271,14 +268,13 @@ html.lenis, html.lenis body {
 }
 
 .engineered-glass {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(7, 8, 15, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 
     0 0 0 1px rgba(108, 99, 255, 0.1),
     0 8px 32px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: background 0.25s ease, border-color 0.25s ease;
   color: white;
   overflow: hidden;
   position: relative;
@@ -290,13 +286,13 @@ html.lenis, html.lenis body {
   inset: 0;
   background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(108,99,255,0.15), transparent 70%);
   opacity: 0;
-  transition: opacity 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: opacity 0.25s ease;
   pointer-events: none;
   z-index: 0;
 }
 
 .engineered-glass:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.15);
 }
 
