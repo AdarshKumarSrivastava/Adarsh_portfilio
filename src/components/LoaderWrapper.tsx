@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function LoaderWrapper({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -15,6 +16,9 @@ export default function LoaderWrapper({ children }: { children: React.ReactNode 
     const tl = gsap.timeline({
       onComplete: () => {
         setIsLoading(false);
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 150);
       },
     });
 

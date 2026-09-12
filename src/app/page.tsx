@@ -1,5 +1,4 @@
 import Header from "@/components/Header";
-import Preloader from "@/components/Preloader";
 import Footer from "@/components/Footer";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
@@ -14,9 +13,8 @@ import Contact from "@/components/sections/Contact";
 export default function Home() {
   return (
     <>
-      <Preloader />
       <Header />
-      <main className="w-full bg-background">
+      <div className="w-full bg-background">
         <Hero />
         <About />
         <Credentials />
@@ -26,7 +24,7 @@ export default function Home() {
         <Experience />
         <Testimonials />
         <Contact />
-      </main>
+      </div>
       <Footer />
     </>
   );

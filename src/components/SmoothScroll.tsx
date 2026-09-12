@@ -5,6 +5,10 @@ import { ReactNode, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
 function LenisScrollTriggerBridge() {
   useLenis(() => {
     ScrollTrigger.update();
@@ -17,7 +21,6 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
   const lenisRef = useRef<any>(null);
 
   useEffect(() => {
-    // Centralized GSAP plugin registration
     gsap.registerPlugin(ScrollTrigger);
 
     function update(time: number) {
@@ -25,8 +28,8 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
     }
 
     gsap.ticker.add(update);
-    // Smooth out dropped frames instead of jarring jumps
-    gsap.ticker.lagSmoothing(500, 33);
+    // lagSmoothing(0) is critical when pairing GSAP with Lenis so ticker never drifts from scroll
+    gsap.ticker.lagSmoothing(0);
 
     // Global ScrollTrigger config
     ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize" });

@@ -1,9 +1,14 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import ProjectModal, { type ProjectData } from "@/components/ProjectModal";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const projects: ProjectData[] = [
   {
@@ -206,7 +211,7 @@ function ProjectCard({
       onMouseLeave={handleMouseLeave}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`project-card relative w-[85vw] md:w-[60vw] lg:w-[45vw] h-[65vh] shrink-0 rounded-[2rem] overflow-hidden cursor-none group opacity-0 will-change-transform ${
+      className={`project-card relative w-[85vw] md:w-[60vw] lg:w-[45vw] h-[65vh] shrink-0 rounded-[2rem] overflow-hidden cursor-none group will-change-transform ${
         !isLast ? "mr-8 md:mr-16" : ""
       }`}
     >
@@ -281,95 +286,110 @@ export default function Projects() {
   const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
 
   useEffect(() => {
+    const container = containerRef.current;
+    const scrollEl = scrollRef.current;
+    if (!container || !scrollEl) return;
 
     const ctx = gsap.context(() => {
-      // 1. Staggered card entrance cascade
-      const cards = gsap.utils.toArray(".project-card");
+      // Calculate dynamic travel distance based on content width
+      const getScrollAmount = () => {
+        return -(scrollEl.scrollWidth - window.innerWidth + window.innerWidth * 0.1);
+      };
+
+      // Native GSAP horizontal scroll with pinning
+      gsap.to(scrollEl, {
+        x: getScrollAmount,
+        ease: "none",
+        scrollTrigger: {
+          trigger: container,
+          start: "top top",
+          end: () => `+=${Math.max(scrollEl.scrollWidth - window.innerWidth + 300, 1200)}`,
+          pin: true,
+          pinSpacing: true,
+          scrub: 1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      // Staggered card entrance on arrival
+      const cards = gsap.utils.toArray<HTMLElement>(".project-card");
       if (cards.length) {
         gsap.fromTo(cards, 
-          { y: 70, opacity: 0, scale: 0.95 },
+          { y: 50, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            scale: 1,
-            duration: 1.2,
-            stagger: 0.12,
-            ease: "expo.out",
+            duration: 0.8,
+            stagger: 0.08,
+            ease: "power2.out",
             scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top 75%",
+              trigger: container,
+              start: "top 85%",
+              once: true,
             }
           }
         );
       }
-
-      // 2. CSS Sticky horizontal scrolling (100% crash proof)
-      const scrollEl = scrollRef.current;
-      if (!scrollEl) return;
-
-      gsap.to(scrollEl, {
-        x: () => -(scrollEl.scrollWidth - window.innerWidth + 100),
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 1,
-          invalidateOnRefresh: true,
-        },
-      });
     }, containerRef);
 
-    return () => ctx.revert();
+    // Refresh ScrollTrigger after initial mount and font/image settling
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 400);
+
+    const handleResize = () => {
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      ctx.revert();
+      clearTimeout(refreshTimer);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const handleClose = useCallback(() => setSelectedProject(null), []);
 
   return (
     <>
-      {/* Tall container for scrolling */}
       <section
         id="projects"
         ref={containerRef}
-        className="relative w-full bg-transparent"
-        style={{ height: "400vh" }}
+        className="relative w-full h-screen overflow-hidden flex flex-col bg-transparent pt-20 md:pt-28"
       >
-        {/* Sticky wrapper */}
-        <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col bg-transparent pt-24 md:pt-32">
-          
-          {/* Section label and scroll indicator combined to prevent overlap */}
-          <div className="px-8 md:px-16 z-40 pointer-events-none shrink-0 mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <p className="text-accent font-mono text-[10px] tracking-[0.4em] uppercase mb-4">03 — Work</p>
-              <h2 className="text-4xl md:text-6xl font-heading font-medium text-white tracking-tight">
-                Selected <span className="text-white/40 italic">Works</span>.
-              </h2>
-              <p className="text-secondary font-sans text-sm mt-4 hidden md:block">
-                Click any card to explore the full case study.
-              </p>
-            </div>
-
-            {/* Scroll progress indicator */}
-            <div className="flex items-center gap-4 pb-2">
-              <div className="w-12 h-[1px] bg-white/20" />
-              <span className="text-secondary font-mono text-[10px] uppercase tracking-widest">Scroll to explore</span>
-            </div>
+        {/* Section label and scroll indicator */}
+        <div className="px-8 md:px-16 z-40 pointer-events-none shrink-0 mb-6 md:mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <p className="text-accent font-mono text-[10px] tracking-[0.4em] uppercase mb-4">03 — Work</p>
+            <h2 className="text-4xl md:text-6xl font-heading font-medium text-white tracking-tight">
+              Selected <span className="text-white/40 italic">Works</span>.
+            </h2>
+            <p className="text-secondary font-sans text-sm mt-4 hidden md:block">
+              Click any card to explore the full case study.
+            </p>
           </div>
 
-          {/* Horizontal scroll track (Fill remaining space) */}
-          <div className="flex-1 flex items-start md:items-center w-full">
-            <div ref={scrollRef} className="flex pl-[8vw] md:pl-[16vw] pr-[8vw] will-change-transform">
-              {projects.map((project, index) => (
-                <ProjectCard
-                  key={index}
-                  project={project}
-                  index={index}
-                  onClick={() => setSelectedProject(project)}
-                />
-              ))}
-            </div>
+          {/* Scroll progress indicator */}
+          <div className="flex items-center gap-4 pb-2">
+            <div className="w-12 h-[1px] bg-white/20" />
+            <span className="text-secondary font-mono text-[10px] uppercase tracking-widest">Scroll to explore</span>
           </div>
-          
+        </div>
+
+        {/* Horizontal scroll track (Fill remaining space) */}
+        <div className="flex-1 flex items-start md:items-center w-full overflow-hidden">
+          <div ref={scrollRef} className="flex pl-[8vw] md:pl-[16vw] pr-[8vw] will-change-transform">
+            {projects.map((project, index) => (
+              <ProjectCard
+                key={index}
+                project={project}
+                index={index}
+                onClick={() => setSelectedProject(project)}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
