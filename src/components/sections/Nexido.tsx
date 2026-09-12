@@ -55,8 +55,8 @@ function AnimatedCounter({ target, suffix = "" }: { target: number, suffix?: str
 }
 
 function DualMarquee() {
-  const wordsRow1 = ["QuantCraft", "Hackathons", "Community", "Scale", "Engineering", "Design"];
-  const wordsRow2 = ["Innovation", "TCU", "SparkX", "Nexido", "Leadership", "Future"];
+  const wordsRow1 = ["QuantCraft", "Hackathons", "Community", "Hack in Hills", "SaaS", "AI Automations"];
+  const wordsRow2 = ["Innovation", "TCU", "SparkX", "Nexido", "Leadership", "Future", "Workshops"];
 
   return (
     <div className="group w-full overflow-hidden border-y border-white/[0.05] py-8 my-24 bg-surface/50 relative z-20">
